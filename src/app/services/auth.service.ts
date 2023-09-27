@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Auth, UserCredential, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
 import { Firestore } from '@angular/fire/firestore';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Usuario } from '../interfaces/usuario.interface';
+
+// Redux
+import { Store } from '@ngrx/store';
+import * as auth from '../auth/auth.actions';
 
 
 @Injectable({
@@ -10,12 +14,29 @@ import { Usuario } from '../interfaces/usuario.interface';
 })
 export class AuthService {
 
-
-  constructor(private auth: Auth, private firestore: Firestore) { }
+  constructor(
+    private auth: Auth,
+    private firestore: Firestore,
+    private store: Store,
+  ) { }
 
 
   initAuthListener() {
-    this.auth.onAuthStateChanged( user => user);
+    this.auth.onAuthStateChanged( fUser => {
+      if(fUser) {
+        const collectionRef = collection(this.firestore, `${fUser.uid}`);
+        const documentRef = doc(collectionRef, 'user');
+        const getADocument = getDoc(documentRef);
+        getADocument.then( user => {
+          const {name, email, uid} = user.data()!;
+          const tempUser: Usuario = {name, email, uid};
+          this.store.dispatch( auth.setUser({ user: tempUser }));
+        })
+        .catch( error => console.log(error) );
+      } else {
+        this.store.dispatch( auth.unsetUser() );
+      }
+    });
   }
 
   async crearUsuario(nombre: string, email: string, password: string) {
