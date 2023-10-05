@@ -3,10 +3,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 
 //Firebase
-import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
-import { provideFirestore,getFirestore } from '@angular/fire/firestore';
-import { provideAuth,getAuth } from '@angular/fire/auth';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,6 +24,10 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { appReducers } from './app.reducer';
+import { OrdenIngresoPipe } from './pipes/orden-ingreso.pipe';
+
+//Charts
+import { NgChartsModule } from 'ng2-charts';
 
 
 
@@ -39,11 +43,13 @@ import { appReducers } from './app.reducer';
     FooterComponent,
     NavbarComponent,
     SidebarComponent,
+    OrdenIngresoPipe,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    NgChartsModule,
     StoreModule.forRoot( appReducers ),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
@@ -54,8 +60,8 @@ import { appReducers } from './app.reducer';
       connectOutsideZone: true // If set to true, the connection is established outside the Angular zone for better performance
     }),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
   ],
   providers: [],
   bootstrap: [AppComponent]

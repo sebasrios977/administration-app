@@ -19,30 +19,31 @@ const checkAuthStatus = (): boolean => {
   const router: Router = inject(Router);
 
 
-
-  if(authService.isLoadedUser) {
+  if(authService.isAuth()) {
+    router.navigate(['/dashboard']);
+    return false;
+  } else {
     return true;
+  }
 
-    } else {
-      router.navigate(['/login']);
-      return false;
-    }
-}
+
   // return authService.isAuth()
   // .pipe(
+  //   tap(auth => console.log(auth)),
   //   map( auth => {
   //     if(auth) {
-  //       return true;
-  //     } else {
-  //       router.navigate(['/login']);
+  //       router.navigate(['/dashboard']);
   //       return false;
+  //     } else {
+  //       return true;
   //     }
   //   })
   // )
+}
 
 
 //No hay necesidad de crear una clase, simplemente definiendo una función flecha y exportándola podemos utilizar sus funcionalidades de guard en el app-routing
-export const canActivateGuard: CanActivateFn = (
+export const publicActivateGuard: CanActivateFn = (
   //Hay que tener en cuenta el tipado CanActiveFn
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
@@ -50,7 +51,7 @@ export const canActivateGuard: CanActivateFn = (
   return checkAuthStatus();
 };
 
-export const canMatchGuard: CanMatchFn = (
+export const publicMatchGuard: CanMatchFn = (
   //Tipado CanMatchFN
   route: Route,
   segments: UrlSegment[]

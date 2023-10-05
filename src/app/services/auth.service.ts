@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Auth, UserCredential, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
-import { Firestore } from '@angular/fire/firestore';
-import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Usuario } from '../interfaces/usuario.interface';
 
 // Redux
 import { Store } from '@ngrx/store';
 import * as auth from '../auth/auth.actions';
+import { AppState } from '../app.reducer';
+import { Auth, Unsubscribe, UserCredential, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
+import { Firestore, collection, doc, getDoc, setDoc } from '@angular/fire/firestore';
+import { Observable, Subject, of } from 'rxjs';
+
 
 
 @Injectable({
@@ -14,27 +16,38 @@ import * as auth from '../auth/auth.actions';
 })
 export class AuthService {
 
+  public isLoadedUser: boolean = false;
+  private _user: Usuario | null = null;
+
+  get user() {
+    return {...this._user};
+  }
+
   constructor(
     private auth: Auth,
     private firestore: Firestore,
-    private store: Store,
-  ) { }
+    private store: Store<AppState>,
+  )
+  {}
 
 
-  initAuthListener() {
-    this.auth.onAuthStateChanged( fUser => {
-      if(fUser) {
+  async initAuthListener() {
+    this.auth.onAuthStateChanged(async (fUser) => { // Agrega "async" aquí
+      if (fUser) {
         const collectionRef = collection(this.firestore, `${fUser.uid}`);
         const documentRef = doc(collectionRef, 'user');
-        const getADocument = getDoc(documentRef);
-        getADocument.then( user => {
-          const {name, email, uid} = user.data()!;
-          const tempUser: Usuario = {name, email, uid};
-          this.store.dispatch( auth.setUser({ user: tempUser }));
-        })
-        .catch( error => console.log(error) );
+        try {
+          const user = await getDoc(documentRef);
+          const { name, email, uid } = user.data()!;
+          const tempUser: Usuario = { name, email, uid };
+          this._user = tempUser;
+          this.store.dispatch(auth.setUser({ user: tempUser }));
+        } catch (error) {
+          console.log(error);
+        }
       } else {
-        this.store.dispatch( auth.unsetUser() );
+        this._user = null;
+        this.store.dispatch(auth.unsetUser());
       }
     });
   }
@@ -46,7 +59,6 @@ export class AuthService {
       const collectionRef = collection(this.firestore, `${user.uid}`);
       const documentRef = doc(collectionRef, 'user');
       setDoc(documentRef, newUser);
-
     })
   }
 
@@ -58,8 +70,8 @@ export class AuthService {
     return signOut(this.auth);
   }
 
-  isAuth(): boolean {
+  isAuth() {
     return this.auth.currentUser !== null;
   }
-
 }
+
