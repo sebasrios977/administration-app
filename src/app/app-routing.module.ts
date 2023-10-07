@@ -22,10 +22,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: DashboardComponent,
-    children: dashboardRoutes,
-    // canActivate: [canActivateGuard],
-    // canMatch: [canMatchGuard],
+    loadChildren: () => import('./ingreso-egreso/ingreso-egreso.module').then(m => m.IngresoEgresoModule),
   },
   { path: '**', redirectTo: '' },
 ];
