@@ -20,29 +20,17 @@ const checkAuthStatus = (): boolean => {
 
 
 
-  if(authService.isLoadedUser) {
+  if(authService.isAuth()) {
     return true;
-
-    } else {
-      router.navigate(['/login']);
-      return false;
-    }
+  } else {
+    router.navigate(['/login']);
+    return false;
+  }
 }
-  // return authService.isAuth()
-  // .pipe(
-  //   map( auth => {
-  //     if(auth) {
-  //       return true;
-  //     } else {
-  //       router.navigate(['/login']);
-  //       return false;
-  //     }
-  //   })
-  // )
 
 
 //No hay necesidad de crear una clase, simplemente definiendo una función flecha y exportándola podemos utilizar sus funcionalidades de guard en el app-routing
-export const canActivateGuard: CanActivateFn = (
+export const privateActivateGuard: CanActivateFn = (
   //Hay que tener en cuenta el tipado CanActiveFn
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
@@ -50,7 +38,7 @@ export const canActivateGuard: CanActivateFn = (
   return checkAuthStatus();
 };
 
-export const canMatchGuard: CanMatchFn = (
+export const privateMatchGuard: CanMatchFn = (
   //Tipado CanMatchFN
   route: Route,
   segments: UrlSegment[]

@@ -10,6 +10,8 @@ import { SharedModule } from '../shared/shared.module';
 import { NgChartsModule } from 'ng2-charts';
 import { OrdenIngresoPipe } from '../pipes/orden-ingreso.pipe';
 import { DashboardRoutesModule } from '../dashboard/dashboard-routes.module';
+import { StoreModule } from '@ngrx/store';
+import { ingresoEgresoReducer } from './ingreso-egreso.reducer';
 
 
 
@@ -23,6 +25,7 @@ import { DashboardRoutesModule } from '../dashboard/dashboard-routes.module';
   ],
   imports: [
     CommonModule,
+    StoreModule.forFeature('ie', ingresoEgresoReducer),
     ReactiveFormsModule,
     RouterModule,
     SharedModule,

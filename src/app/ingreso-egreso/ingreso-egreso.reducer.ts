@@ -5,6 +5,11 @@ import { IngresoEgreso } from "../interfaces/ingreso-egreso.interface";
 export interface State {
   items: IngresoEgreso[],
 }
+
+export interface AppStateWithIngresoEgreso extends State {
+  ie: State,
+}
+
 export const initialState: State = {
   items: [],
 }

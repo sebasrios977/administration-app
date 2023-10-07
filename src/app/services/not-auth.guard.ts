@@ -1,6 +1,5 @@
 //se importa esta libreria para poder inyectar dependencias sin constructor de clase
 import { inject } from '@angular/core';
-import { Observable, map, take, tap } from 'rxjs';
 import {
   ActivatedRouteSnapshot,
   CanActivateFn,
@@ -25,20 +24,6 @@ const checkAuthStatus = (): boolean => {
   } else {
     return true;
   }
-
-
-  // return authService.isAuth()
-  // .pipe(
-  //   tap(auth => console.log(auth)),
-  //   map( auth => {
-  //     if(auth) {
-  //       router.navigate(['/dashboard']);
-  //       return false;
-  //     } else {
-  //       return true;
-  //     }
-  //   })
-  // )
 }
 
 
